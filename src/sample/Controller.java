@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -19,7 +20,7 @@ import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
-    public ArrayList<Process> processes = new ArrayList<>();
+
 
     public TextField processInput;
     public TextField burstInput;
@@ -37,7 +38,8 @@ public class Controller implements Initializable {
     public Label burstLabel;
     public Label priorityLabel;
     public Label arrivalLabel;
-
+    public TextField quantumInput;
+    public Label quantumError;
     GanttChart<Number,String> chart;
 
     public void addButtonClicked() {
@@ -49,12 +51,20 @@ public class Controller implements Initializable {
         if(!validateName(name) |!validateBurst(burstTime) | !validateArrival(arrivalTime) |!validatePriority(priority))
             return;
 
+        for (Process p : table.getItems())
+        {
+           if(("P"+name).equals(p.getName())) {
+               nameLabel.setText("*Enter unique No.");
+               return;
+           }
+        }
+       // nameLabel.setText("");
+
         process.setName("P"+name);
         process.setBurst_time(Integer.parseInt(burstTime));
         process.setArrival_time(Integer.parseInt(arrivalTime));
         process.setPriority(Integer.parseInt(priority));
         table.getItems().add(process);
-        processes.add(process);
         processInput.clear();
         burstInput.clear();
         priorityInput.clear();
@@ -66,6 +76,11 @@ public class Controller implements Initializable {
         try {
             int number = Integer.parseInt(name);
             nameLabel.setText("");
+            if(number<0)
+            {
+                nameLabel.setText("*Enter +ve No.");
+                return false;
+            }
             return true;
         }catch (NumberFormatException e)
         {
@@ -77,11 +92,16 @@ public class Controller implements Initializable {
     {
         try {
             int number = Integer.parseInt(burst);
+            if(number<0)
+            {
+                burstLabel.setText("*Enter +ve No.");
+                return false;
+            }
             burstLabel.setText("");
             return true;
         }catch (NumberFormatException e)
         {
-            burstLabel.setText("*Enter Burst Time");
+            burstLabel.setText("*Enter integer Time");
             return false;
         }
     }
@@ -89,11 +109,16 @@ public class Controller implements Initializable {
     {
         try {
             int number = Integer.parseInt(arrival);
+            if(number<0)
+            {
+                arrivalLabel.setText("*Enter +ve No.");
+                return false;
+            }
             arrivalLabel.setText("");
             return true;
         }catch (NumberFormatException e)
         {
-            arrivalLabel.setText("*Enter Arrival Time");
+            arrivalLabel.setText("*Enter integer Time");
             return false;
         }
     }
@@ -101,11 +126,34 @@ public class Controller implements Initializable {
     {
         try {
             int number = Integer.parseInt(priority);
+            if(number<0)
+            {
+                priorityLabel.setText("*Enter +ve No.");
+                return false;
+            }
            priorityLabel.setText("");
             return true;
         }catch (NumberFormatException e)
         {
-            priorityLabel.setText("*Enter Priority");
+            priorityLabel.setText("*Enter integer No.");
+            return false;
+        }
+    }
+    boolean validateQuantum(String quantum)
+    {
+        try {
+            int number = Integer.parseInt(quantum);
+            if (number<=0)
+            {
+
+                quantumError.setText("*Enter +ve No.");
+                return false;
+            }
+            quantumError.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            quantumError.setText("*Enter Correct Quantum");
             return false;
         }
     }
@@ -114,7 +162,6 @@ public class Controller implements Initializable {
         ObservableList<Process> productSelected, allProducts;
         allProducts = table.getItems();
         productSelected = table.getSelectionModel().getSelectedItems();
-        System.out.println(processes.size());
 
         productSelected.forEach(allProducts::remove);
 
@@ -133,7 +180,8 @@ public class Controller implements Initializable {
         comboBox.getItems().add("Priority(Preemptive-Round Robin)");
         comboBox.getItems().add("FCFS");
         comboBox.getItems().add("SJF(Non-Preemptive)");
-        comboBox.getItems().add("SJF(Preemptive)");
+        comboBox.getItems().add("SJF(PreemptiveFC)");
+        comboBox.getItems().add("SJF(PreemptiveRR)");
         comboBox.getItems().add("Round Robbin");
 
 
@@ -154,7 +202,7 @@ public class Controller implements Initializable {
         yAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(new String[]{""})));
 
         chart.setTitle("Gantt Chart");
-        chart.setLegendVisible(true);
+        chart.setLegendVisible(false);
         chart.setBlockHeight(50);
 
         chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());
@@ -162,14 +210,62 @@ public class Controller implements Initializable {
 
         comboBox.setOnAction(event -> {
             comboErrorLabel.setText("");
+            if (comboBox.getValue().equals("Round Robbin"))
+            {
+                quantumInput.setVisible(true);
+                quantumError.setVisible(true);
+
+            }
+            else
+            {
+                quantumInput.setVisible(false);
+                quantumError.setVisible(false);
+            }
         });
 
+        processInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if(processInput.getText()==null || processInput.getText().isEmpty()) {
+                nameLabel.setText("");
+                return;
+            }
+            validateName(processInput.getText());
 
+        }));
+        burstInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if(burstInput.getText()==null || burstInput.getText().isEmpty()) {
+                burstLabel.setText("");
+                return;
+            }
+            validateBurst(burstInput.getText());
+        }));
+        arrivalInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if(arrivalInput.getText()==null || arrivalInput.getText().isEmpty()) {
+                arrivalLabel.setText("");
+                return;
+            }
+            validateArrival(arrivalInput.getText());
+        }));
+        priorityInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if(priorityInput.getText()==null || priorityInput.getText().isEmpty()) {
+                priorityLabel.setText("");
+                return;
+            }
+            validatePriority(priorityInput.getText());
+        }));
+
+        quantumInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if(quantumInput.getText()==null || quantumInput.getText().isEmpty()){
+                quantumError.setText("");
+                return;
+            }
+            validateQuantum(quantumInput.getText());
+        }));
     }
 
 
     public void resetButtonClicked() {
         table.getItems().clear();
+        chart.getData().clear();
     }
 
     public void startButtonClicked() {
@@ -183,6 +279,8 @@ public class Controller implements Initializable {
         }
       if(  comboBox.getSelectionModel().getSelectedItem() == null)
           comboErrorLabel.setText("*Please Choose Algorithm First ");
+      else if(table.getItems().size()==0)
+          comboErrorLabel.setText("*Please Enter at least one Process ");
       else {
           comboErrorLabel.setText("");
           switch ((String) comboBox.getValue()) {
@@ -191,6 +289,53 @@ public class Controller implements Initializable {
 
                   XYChart.Series series = PriorityAlgorithm.NonPrePriority(pro);
                   chart.getData().addAll(series);
+                  break;
+
+              }
+              case "Priority(Preemptive-FCFS)": // Priority(Non-Preemptive)
+              {
+
+                  XYChart.Series series = PriorityAlgorithm.PrePriorityFC(pro);
+                  chart.getData().addAll(series);
+                  break;
+
+              }
+              case "Priority(Preemptive-Round Robin)": // Priority(Non-Preemptive)
+              {
+                  XYChart.Series series = PriorityAlgorithm.PrePriorityRR(pro);
+                  chart.getData().addAll(series);
+                  break;
+              }
+              case "FCFS": // Priority(Non-Preemptive)
+              {
+                  XYChart.Series series = FCFSAlgorithm.FCFS(pro);
+                  chart.getData().addAll(series);
+                  break;
+              }
+              case "SJF(Non-Preemptive)": // Priority(Non-Preemptive)
+              {
+                  XYChart.Series series = SJFAlgorithm.NonPreSJF(pro);
+                  chart.getData().addAll(series);
+                  break;
+              }
+              case "SJF(PreemptiveFC)": // Priority(Non-Preemptive)
+              {
+                  XYChart.Series series = SJFAlgorithm.PreSJFFC(pro);
+                  chart.getData().addAll(series);
+                  break;
+              }
+              case "SJF(PreemptiveRR)": // Priority(Non-Preemptive)
+              {
+                  XYChart.Series series = SJFAlgorithm.PreSJFRR(pro);
+                  chart.getData().addAll(series);
+                  break;
+              }
+              case "Round Robbin": // Priority(Non-Preemptive)
+              {
+                  if(validateQuantum(quantumInput.getText())) {
+                      XYChart.Series series = RoundRobinAlgorithm.RoundRobin(pro, Integer.parseInt(quantumInput.getText()));
+                      chart.getData().addAll(series);
+                  }
                   break;
 
               }

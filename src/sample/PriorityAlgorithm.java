@@ -1,13 +1,21 @@
 package sample;
+
 import javafx.scene.chart.XYChart;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class PriorityAlgorithm {
 
-    public static String[] colors = {"status-red","status-green","status-blue","status-yellow"};
-    public static XYChart.Series NonPrePriority (Process [] p1)
+    public static String[] colors = {"status-darkRed","status-green","status-blue","status-yellow","status-black",
+            "status-brown","status-foshia","status-bate5y","status-smawy","status-nescafe","status-orange",
+            "status-red","status-lamony","status-holoOrange","status-purple","status-move","status-white"};
+    public static XYChart.Series NonPrePriority (Process[] copy_process)
     {
+        Process[]p1=new Process[copy_process.length];
+        for (int i = 0; i < p1.length; i++) {
+            p1[i]=new Process(copy_process[i]);
+        }
         XYChart.Series series1 = new XYChart.Series();
         for(int i=0;i<p1.length;i++)
         {
@@ -88,8 +96,19 @@ public class PriorityAlgorithm {
         return series1;
     }
 
-    public static void PrePriorityFC (Process[] p1)
+    public static XYChart.Series PrePriorityFC (Process[] copy_process)
     {
+        Process[]p1=new Process[copy_process.length];
+        for (int i = 0; i < p1.length; i++) {
+            p1[i]=new Process(copy_process[i]);
+        }
+        XYChart.Series series1 = new XYChart.Series();
+        for(int i=0;i<p1.length;i++)
+        {
+            p1[i].setColor(colors[i]);
+        }
+        int starttime=0;
+        int finishtime=0;
         ArrayList<Process> p=new ArrayList<>();
         for(int i=0;i<p1.length;i++){
             p.add(p1[i]);
@@ -120,8 +139,10 @@ public class PriorityAlgorithm {
                 if((t==0&&queue.get(max).getArrival_time()!=0)||queue.get(max).getArrival_time() >t ) {
                     int k=t;
                     for (int i = 0; i < queue.get(max).getArrival_time()-k; i++) {
+                        starttime=t;
                         seq +=" " + t + " ";
                         t++;
+                        finishtime=t;
                         for (int i1 = 1; i1 < queue.size(); i1++) {
                             if (t >= queue.get(i1).getArrival_time()) {
                                 if (queue.get(i1).getPriority() <= queue.get(max).getPriority()) {
@@ -133,10 +154,14 @@ public class PriorityAlgorithm {
                         }
                     }
                 }
+                starttime=t;
                 queue.get(max).setWt(t-queue.get(max).getArrival_time());
                 queue.get(max).setBurst_time(queue.get(max).getBurst_time()-1);
                 seq += t+" " +queue.get(max).getName()+" ";
                 t = t + 1;
+                finishtime=t;
+                series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p1[(maskp.indexOf(queue.get(max)))].getColor())));
+
             }
             if (queue.get(max).getBurst_time() != 0) {
                 queue.add( queue.get(max));
@@ -147,7 +172,7 @@ public class PriorityAlgorithm {
         }
         System.out.println("name   wtime");
         seq +=" " + t ;
-        for (int i = 0; i < maskp.size(); i++) {
+                for (int i = 0; i < maskp.size(); i++) {
             System.out.println(" " + maskp.get(i).getName()
                     + "    " + maskp.get(i).getWt());
             res = res + maskp.get(i).getWt();
@@ -155,11 +180,23 @@ public class PriorityAlgorithm {
         System.out.println("Average waiting time is "
                 + (float)res / maskp.size());
         System.out.println("Sequence is like that " + seq);
+        return series1;
     }
 
-    public static void PrePriorityRR (Process[] p1)
+    public static XYChart.Series PrePriorityRR (Process[] copy_process)
 
     {
+        Process[]p1=new Process[copy_process.length];
+        for (int i = 0; i < p1.length; i++) {
+            p1[i]=new Process(copy_process[i]);
+        }
+        XYChart.Series series1 = new XYChart.Series();
+        for(int i=0;i<p1.length;i++)
+        {
+            p1[i].setColor(colors[i]);
+        }
+        int starttime=0;
+        int finishtime=0;
         ArrayList <Process> p=new ArrayList<Process>();
         for(int i=0;i<p1.length;i++){
             p.add(p1[i]);
@@ -188,8 +225,10 @@ public class PriorityAlgorithm {
                 if((t==0&&queue.get(max).getArrival_time()!=0)||queue.get(max).getArrival_time() >t ) {
                     int k=t;
                     for (int i = 0; i < queue.get(max).getArrival_time()-k; i++) {
+                        starttime=t;
                         seq +=" " + t + " ";
                         t++;
+                        finishtime=t;
                         for (int i1 = 1; i1 < queue.size(); i1++) {
                             if (t >= queue.get(i1).getArrival_time()) {
                                 if (queue.get(i1).getPriority() < queue.get(max).getPriority()) {
@@ -199,10 +238,14 @@ public class PriorityAlgorithm {
                         }
                     }
                 }
+                starttime=t;
                 queue.get(max).setWt(t-queue.get(max).getArrival_time());
                 queue.get(max).setBurst_time(queue.get(max).getBurst_time()-1);
                 seq += t+" " +queue.get(max).getName()+" ";
                 t = t + 1;
+                finishtime=t;
+                series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p1[(maskp.indexOf(queue.get(max)))].getColor())));
+
             }
             if (queue.get(max).getBurst_time() != 0) {
                 queue.add( queue.get(max));
@@ -217,10 +260,12 @@ public class PriorityAlgorithm {
             System.out.println(" " + maskp.get(i).getName()
                     + "    " + maskp.get(i).getWt());
             res = res + maskp.get(i).getWt();
+
         }
         System.out.println("Average waiting time is "
                 + (float)res / maskp.size());
         System.out.println("Sequence is like that " + seq);
+        return series1;
     }
 
 

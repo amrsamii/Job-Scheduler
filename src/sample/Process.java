@@ -34,6 +34,7 @@ public class Process {
         this.turn_around_time = another.turn_around_time;
         this.name = another.name;
         this.priority=another.priority;
+        this.color=another.color;
     }
     public String getName() {
         return name;
