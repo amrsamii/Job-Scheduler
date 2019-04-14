@@ -32,6 +32,7 @@ public class Controller implements Initializable {
     public TableColumn arrivalColumn;
     public ComboBox comboBox;
     public VBox chartVBox;
+    public Label comboErrorLabel;
 
     GanttChart<Number,String> chart;
 
@@ -82,7 +83,7 @@ public class Controller implements Initializable {
         final NumberAxis xAxis = new NumberAxis();
         final CategoryAxis yAxis = new CategoryAxis();
 
-         chart = new GanttChart<Number,String>(xAxis,yAxis);
+         chart = new GanttChart<>(xAxis,yAxis);
         xAxis.setLabel("");
         xAxis.setTickLabelFill(Color.CHOCOLATE);
         xAxis.setMinorTickCount(4);
@@ -91,6 +92,7 @@ public class Controller implements Initializable {
         yAxis.setTickLabelFill(Color.CHOCOLATE);
         yAxis.setTickLabelGap(10);
 
+        yAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(new String[]{""})));
 
         chart.setTitle("Gantt Chart");
         chart.setLegendVisible(true);
@@ -98,6 +100,10 @@ public class Controller implements Initializable {
 
         chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());
         chartVBox.getChildren().add(chart);
+
+        comboBox.setOnAction(event -> {
+            comboErrorLabel.setText("");
+        });
 
 
     }
@@ -116,15 +122,23 @@ public class Controller implements Initializable {
             pro[i] = processes.get(i);
 
         }
-        switch ((String) comboBox.getValue()) {
-            case "Priority(Non-Preemptive)": // Priority(Non-Preemptive)
-            {
+      if(  comboBox.getSelectionModel().getSelectedItem() == null)
+          comboErrorLabel.setText("*Please Choose Algorithm First ");
+      else {
+          comboErrorLabel.setText("");
+          switch ((String) comboBox.getValue()) {
+              case "Priority(Non-Preemptive)": // Priority(Non-Preemptive)
+              {
 
-                XYChart.Series series =  PriorityAlgorithm.NonPrePriority(pro);
-                chart.getData().addAll(series);
+                  XYChart.Series series = PriorityAlgorithm.NonPrePriority(pro);
+                  chart.getData().addAll(series);
+                  break;
 
-            }
-        }
+              }
+          }
+      }
 
     }
+
+
 }

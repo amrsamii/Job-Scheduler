@@ -15,12 +15,12 @@
    <right>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <TableView prefHeight="350.0" prefWidth="318.0" fx:id="table">
+            <TableView fx:id="table" prefHeight="350.0" prefWidth="318.0">
               <columns>
-                <TableColumn prefWidth="95.0" text="Process" fx:id="processColumn"/>
-                <TableColumn prefWidth="137.0" text="Burst Time" fx:id="burstColumn" />
-                  <TableColumn prefWidth="110.0" text="Priority" fx:id="priorityColumn"/>
-                  <TableColumn prefWidth="168.0" text="Arrival Time" fx:id="arrivalColumn" />
+                <TableColumn fx:id="processColumn" prefWidth="95.0" text="Process" />
+                <TableColumn fx:id="burstColumn" prefWidth="137.0" text="Burst Time" />
+                  <TableColumn fx:id="priorityColumn" prefWidth="110.0" text="Priority" />
+                  <TableColumn fx:id="arrivalColumn" prefWidth="168.0" text="Arrival Time" />
               </columns>
             </TableView>
             <HBox spacing="5.0">
@@ -30,8 +30,8 @@
                   <TextField fx:id="priorityInput" prefHeight="25.0" prefWidth="62.0" promptText="Priority" />
                   <TextField fx:id="arrivalInput" prefHeight="25.0" prefWidth="98.0" promptText="Arrival Time" />
                   <Button fx:id="addButton" mnemonicParsing="false" onAction="#addButtonClicked" text="Add" />
-                  <Button mnemonicParsing="false" text="Delete" onAction="#deleteButtonClicked" />
-                  <Button layoutX="379.0" layoutY="10.0" mnemonicParsing="false" text="Reset"  onAction="#resetButtonClicked"/>
+                  <Button mnemonicParsing="false" onAction="#deleteButtonClicked" text="Delete" />
+                  <Button layoutX="379.0" layoutY="10.0" mnemonicParsing="false" onAction="#resetButtonClicked" text="Reset" />
                </children>
             </HBox>
          </children>
@@ -66,10 +66,14 @@
       </VBox>
    </top>
    <left>
-      <VBox spacing="10.0" BorderPane.alignment="CENTER" fx:id="chartVBox">
+      <VBox fx:id="chartVBox" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox promptText="Choose Algorithm" fx:id="comboBox" />
-            <Button mnemonicParsing="false" text="Start Simulation" onAction="#startButtonClicked" />
+            <ComboBox fx:id="comboBox"  promptText="Choose Algorithm" />
+            <Label fx:id="comboErrorLabel" textFill="#d71a1a">
+               <font>
+                  <Font size="10.0" />
+               </font></Label>
+            <Button mnemonicParsing="false" onAction="#startButtonClicked" text="Start Simulation" />
             <Label text="Average Waiting Time:">
                <font>
                   <Font name="System Bold" size="13.0" />
