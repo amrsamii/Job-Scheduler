@@ -13,22 +13,58 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <right>
-      <VBox BorderPane.alignment="CENTER">
+      <VBox spacing="10.0" BorderPane.alignment="CENTER">
          <children>
             <TableView fx:id="table" prefHeight="350.0" prefWidth="318.0">
               <columns>
-                <TableColumn fx:id="processColumn" prefWidth="95.0" text="Process" />
-                <TableColumn fx:id="burstColumn" prefWidth="137.0" text="Burst Time" />
-                  <TableColumn fx:id="priorityColumn" prefWidth="110.0" text="Priority" />
-                  <TableColumn fx:id="arrivalColumn" prefWidth="168.0" text="Arrival Time" />
+                <TableColumn fx:id="processColumn" prefWidth="130.0" text="Process" />
+                <TableColumn fx:id="burstColumn" prefWidth="154.0" text="Burst Time" />
+                  <TableColumn fx:id="priorityColumn" prefWidth="124.0" text="Priority" />
+                  <TableColumn fx:id="arrivalColumn" prefWidth="181.0" text="Arrival Time" />
               </columns>
             </TableView>
             <HBox spacing="5.0">
                <children>
-                  <TextField fx:id="processInput" prefHeight="25.0" prefWidth="72.0" promptText="Process" />
-                  <TextField fx:id="burstInput" prefHeight="25.0" prefWidth="89.0" promptText="Burst Time" />
-                  <TextField fx:id="priorityInput" prefHeight="25.0" prefWidth="62.0" promptText="Priority" />
-                  <TextField fx:id="arrivalInput" prefHeight="25.0" prefWidth="98.0" promptText="Arrival Time" />
+                  <VBox>
+                     <children>
+                        <TextField fx:id="processInput" alignment="CENTER" prefHeight="25.0" prefWidth="110.0" promptText="Process" />
+                        <Label fx:id="nameLabel" textFill="RED">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <TextField fx:id="burstInput" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="Burst Time" />
+                        <Label fx:id="burstLabel" textFill="RED">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <TextField fx:id="priorityInput" alignment="CENTER" prefHeight="25.0" prefWidth="80.0" promptText="Priority" />
+                        <Label fx:id="priorityLabel" textFill="RED">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <TextField fx:id="arrivalInput" alignment="CENTER" prefHeight="25.0" prefWidth="110.0" promptText="Arrival Time" />
+                        <Label fx:id="arrivalLabel" textFill="RED">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
                   <Button fx:id="addButton" mnemonicParsing="false" onAction="#addButtonClicked" text="Add" />
                   <Button mnemonicParsing="false" onAction="#deleteButtonClicked" text="Delete" />
                   <Button layoutX="379.0" layoutY="10.0" mnemonicParsing="false" onAction="#resetButtonClicked" text="Reset" />
@@ -68,7 +104,7 @@
    <left>
       <VBox fx:id="chartVBox" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="comboBox"  promptText="Choose Algorithm" />
+            <ComboBox fx:id="comboBox" promptText="Choose Algorithm" />
             <Label fx:id="comboErrorLabel" textFill="#d71a1a">
                <font>
                   <Font size="10.0" />

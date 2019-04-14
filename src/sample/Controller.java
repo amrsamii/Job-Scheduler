@@ -33,15 +33,26 @@ public class Controller implements Initializable {
     public ComboBox comboBox;
     public VBox chartVBox;
     public Label comboErrorLabel;
+    public Label nameLabel;
+    public Label burstLabel;
+    public Label priorityLabel;
+    public Label arrivalLabel;
 
     GanttChart<Number,String> chart;
 
     public void addButtonClicked() {
         Process process = new Process();
-        process.setName(processInput.getText());
-        process.setBurst_time(Integer.parseInt(burstInput.getText()));
-        process.setArrival_time(Integer.parseInt(arrivalInput.getText()));
-        process.setPriority(Integer.parseInt(priorityInput.getText()));
+        String name = processInput.getText();
+        String burstTime = burstInput.getText();
+        String arrivalTime = arrivalInput.getText();
+        String priority = priorityInput.getText();
+        if(!validateName(name) |!validateBurst(burstTime) | !validateArrival(arrivalTime) |!validatePriority(priority))
+            return;
+
+        process.setName("P"+name);
+        process.setBurst_time(Integer.parseInt(burstTime));
+        process.setArrival_time(Integer.parseInt(arrivalTime));
+        process.setPriority(Integer.parseInt(priority));
         table.getItems().add(process);
         processes.add(process);
         processInput.clear();
@@ -49,6 +60,54 @@ public class Controller implements Initializable {
         priorityInput.clear();
         arrivalInput.clear();
 
+    }
+    boolean validateName(String name)
+    {
+        try {
+            int number = Integer.parseInt(name);
+            nameLabel.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            nameLabel.setText("*Enter No. of Process");
+            return false;
+        }
+    }
+    boolean validateBurst(String burst)
+    {
+        try {
+            int number = Integer.parseInt(burst);
+            burstLabel.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            burstLabel.setText("*Enter Burst Time");
+            return false;
+        }
+    }
+    boolean validateArrival(String arrival)
+    {
+        try {
+            int number = Integer.parseInt(arrival);
+            arrivalLabel.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            arrivalLabel.setText("*Enter Arrival Time");
+            return false;
+        }
+    }
+    boolean validatePriority(String priority)
+    {
+        try {
+            int number = Integer.parseInt(priority);
+           priorityLabel.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            priorityLabel.setText("*Enter Priority");
+            return false;
+        }
     }
 
     public void deleteButtonClicked() {
