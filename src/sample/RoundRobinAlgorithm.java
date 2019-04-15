@@ -4,13 +4,34 @@ import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
+import static sample.Controller.colors;
 public class RoundRobinAlgorithm {
-    public static String[] colors = {"status-darkRed","status-green","status-blue","status-yellow","status-black",
-            "status-brown","status-foshia","status-bate5y","status-smawy","status-nescafe","status-orange",
-            "status-red","status-lamony","status-holoOrange","status-purple","status-move","status-white"};
+
+    private static double Average_waiting_time=0;
+
+    public static double getAverage_turnAround_time() {
+        return Average_turnAround_time;
+    }
+
+    public static void setAverage_turnAround_time(double average_turnAround_time) {
+        Average_turnAround_time = average_turnAround_time;
+    }
+
+    private static double Average_turnAround_time=0;
+    public static double getAverage_waiting_time() {
+        return Average_waiting_time;
+    }
+
+    public static void setAverage_waiting_time(double average_waiting_time) {
+        Average_waiting_time = average_waiting_time;
+    }
+
+
     public static  XYChart.Series RoundRobin(Process copy_process[], int n) {
-        int res = 0;
+        setAverage_turnAround_time(0);
+        setAverage_waiting_time(0);
+        double res = 0;
+        double resc=0;
         Process[]p=new Process[copy_process.length];
         for (int i = 0; i < p.length; i++) {
             p[i]=new Process(copy_process[i]);
@@ -83,6 +104,7 @@ public class RoundRobinAlgorithm {
                 series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p[(res_b.indexOf(mask))].getColor())));
 
                 mask.setWt(t -mask_array[res_b.indexOf(mask)].getBurst_time() -mask.getArrival_time());
+                mask.setTurn_around_time(t -mask.getArrival_time());
             } else if (n > mask.getBurst_time() &&t>=first){
                 starttime=t;
                 t = t + mask.getBurst_time();
@@ -91,8 +113,9 @@ public class RoundRobinAlgorithm {
                 seq = seq + " " + mask.getName() + " " + t;
                 series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p[(res_b.indexOf(mask))].getColor())));
 
-                int k=res_b.indexOf(mask);
+
                 mask.setWt(t -mask_array[res_b.indexOf(mask)].getBurst_time() -mask.getArrival_time());
+                mask.setTurn_around_time(t -mask.getArrival_time());
             }
             if (mask.getBurst_time() != 0) {
                 queue.add(mask);
@@ -105,9 +128,13 @@ public class RoundRobinAlgorithm {
                     "    " + p[i].getWt());
 
             res = res + p[i].getWt();
+            resc=resc+p[i].getTurn_around_time();
+
         }
         System.out.println("Average waiting time is "
                 + (float)res / p.length);
+        setAverage_waiting_time((double)res/p.length);
+        setAverage_turnAround_time((double)resc/p.length);
         System.out.println("Sequence is like that " + seq);
         return series1;
     }

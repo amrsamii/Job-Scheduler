@@ -81,16 +81,17 @@ public class Process {
 
 
     public static void ProcessSort(Process[] prcos) {
-        int i, j, min_idx;
+        int i, j;
         for(i = 0;  i < prcos.length-1;  i ++) {
-            min_idx = i;
+
             for (j = i+1; j <prcos.length ; j++) {
-                if (prcos[j].getArrival_time() < prcos[min_idx].getArrival_time())
-                    min_idx = j;
+                if (prcos[j].getArrival_time() < prcos[i].getArrival_time()) {
+                    Process temp = prcos[i];
+                    prcos[i] = prcos[j];
+                    prcos[j] = temp;
+                }
             }
-            Process temp = prcos[min_idx];
-            prcos[min_idx] = prcos[i];
-            prcos[i] = temp;
+
         }
     }
 

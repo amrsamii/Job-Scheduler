@@ -5,27 +5,47 @@ import javafx.scene.chart.XYChart;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class PriorityAlgorithm {
 
-    public static String[] colors = {"status-darkRed","status-green","status-blue","status-yellow","status-black",
-            "status-brown","status-foshia","status-bate5y","status-smawy","status-nescafe","status-orange",
-            "status-red","status-lamony","status-holoOrange","status-purple","status-move","status-white"};
-    public static XYChart.Series NonPrePriority (Process[] copy_process)
+
+public class PriorityAlgorithm {
+    private static double Average_waiting_time=0;
+    private static double Average_turnAround_time=0;
+
+    public static double getAverage_turnAround_time() {
+        return Average_turnAround_time;
+    }
+
+    public static void setAverage_turnAround_time(double average_turnAround_time) {
+        Average_turnAround_time = average_turnAround_time;
+    }
+
+    public static  double getAverage_waiting_time() {
+        return Average_waiting_time;
+    }
+
+    public static void setAverage_waiting_time(double average_waiting_time) {
+        Average_waiting_time = average_waiting_time;
+    }
+
+
+    public static XYChart.Series NonPrePriority (Process[] copy_process  )
     {
+        setAverage_turnAround_time(0);
+        setAverage_waiting_time(0);
         Process[]p1=new Process[copy_process.length];
         for (int i = 0; i < p1.length; i++) {
             p1[i]=new Process(copy_process[i]);
         }
         XYChart.Series series1 = new XYChart.Series();
 
-
+        double resc = 0;
         ArrayList<Process>p =new ArrayList<>();
         for(int i=0;i<p1.length;i++){
             p.add(p1[i]);
         }
 
         String seq = new String();
-        float res=0;
+        double res=0;
         int finishtime=0;
         int starttime=0;
 
@@ -53,7 +73,7 @@ public class PriorityAlgorithm {
                         seq +=" " + t + " ";
                         t++;
                         finishtime=t;
-                      //  series1.getData().add(new XYChart.Data(starttime,"processes",new GanttChart.ExtraData( finishtime-starttime,colors[j])));
+                        //  series1.getData().add(new XYChart.Data(starttime,"processes",new GanttChart.ExtraData( finishtime-starttime,colors[j])));
                         for (int i1 = 1; i1 < p.size(); i1++) {
                             if (t >= p.get(i1).getArrival_time()) {
                                 if (p.get(i1).getPriority() < p.get(max).getPriority()) {
@@ -63,11 +83,14 @@ public class PriorityAlgorithm {
                         }
                     }
                 }
-                p.get(max).setWt(t-p.get(max).getArrival_time());
+
+
                 seq += t+" " +p.get(max).getName()+" ";
                 starttime=t;
 
                 t = t + p.get(max).getBurst_time();
+                p.get(max).setWt(t-copy_process[maskp.indexOf(p.get(max))].getBurst_time()-p.get(max).getArrival_time());
+                p.get(max).setTurn_around_time(t - p.get(max).getArrival_time());
                 finishtime=t;
                 series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p1[(maskp.indexOf(p.get(max)))].getColor())));
 
@@ -83,9 +106,12 @@ public class PriorityAlgorithm {
             System.out.println(" " + maskp.get(i).getName()
                     + "    " + maskp.get(i).getWt());
             res = res + maskp.get(i).getWt();
+            resc = resc + maskp.get(i).getTurn_around_time();
         }
         System.out.println("Average waiting time is "
                 + (float)res / maskp.size());
+        setAverage_waiting_time((double)res/maskp.size());
+        setAverage_turnAround_time(((double)resc/maskp.size()));
         System.out.println("Sequence is like that " + seq);
 
 
@@ -94,6 +120,9 @@ public class PriorityAlgorithm {
 
     public static XYChart.Series PrePriorityFC (Process[] copy_process)
     {
+        setAverage_turnAround_time(0);
+        setAverage_waiting_time(0);
+        double resc = 0;
         Process[]p1=new Process[copy_process.length];
         for (int i = 0; i < p1.length; i++) {
             p1[i]=new Process(copy_process[i]);
@@ -107,7 +136,7 @@ public class PriorityAlgorithm {
             p.add(p1[i]);
         }
         String seq = new String();
-        float res=0;
+        double res=0;
         ArrayList <Process> maskp=new ArrayList<Process>();
         for(int i=0;i<p.size();i++){
             maskp.add(p.get(i));
@@ -148,10 +177,14 @@ public class PriorityAlgorithm {
                     }
                 }
                 starttime=t;
-                queue.get(max).setWt(t-queue.get(max).getArrival_time());
+
+
+
                 queue.get(max).setBurst_time(queue.get(max).getBurst_time()-1);
                 seq += t+" " +queue.get(max).getName()+" ";
                 t = t + 1;
+                queue.get(max).setWt(t-copy_process[maskp.indexOf(queue.get(max))].getBurst_time()-queue.get(max).getArrival_time());
+                queue.get(max).setTurn_around_time(t-queue.get(max).getArrival_time());
                 finishtime=t;
                 series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p1[(maskp.indexOf(queue.get(max)))].getColor())));
 
@@ -165,13 +198,17 @@ public class PriorityAlgorithm {
         }
         System.out.println("name   wtime");
         seq +=" " + t ;
-                for (int i = 0; i < maskp.size(); i++) {
+        for (int i = 0; i < maskp.size(); i++) {
             System.out.println(" " + maskp.get(i).getName()
                     + "    " + maskp.get(i).getWt());
             res = res + maskp.get(i).getWt();
+            resc = resc + maskp.get(i).getTurn_around_time();
+
         }
         System.out.println("Average waiting time is "
                 + (float)res / maskp.size());
+        setAverage_waiting_time((double)res/maskp.size());
+        setAverage_turnAround_time((double)resc/maskp.size());
         System.out.println("Sequence is like that " + seq);
         return series1;
     }
@@ -179,6 +216,8 @@ public class PriorityAlgorithm {
     public static XYChart.Series PrePriorityRR (Process[] copy_process)
 
     {
+        setAverage_turnAround_time(0);
+        setAverage_waiting_time(0);
         Process[]p1=new Process[copy_process.length];
         for (int i = 0; i < p1.length; i++) {
             p1[i]=new Process(copy_process[i]);
@@ -192,7 +231,8 @@ public class PriorityAlgorithm {
             p.add(p1[i]);
         }
         String seq = new String();
-        float res=0;
+        double res=0;
+        double resc=0;
         ArrayList <Process> maskp=new ArrayList<Process>();
         for(int i=0;i<p.size();i++){
             maskp.add(p.get(i));
@@ -229,10 +269,14 @@ public class PriorityAlgorithm {
                     }
                 }
                 starttime=t;
-                queue.get(max).setWt(t-queue.get(max).getArrival_time());
+
+
                 queue.get(max).setBurst_time(queue.get(max).getBurst_time()-1);
                 seq += t+" " +queue.get(max).getName()+" ";
                 t = t + 1;
+
+                queue.get(max).setWt(t-copy_process[maskp.indexOf(queue.get(max))].getBurst_time()-queue.get(max).getArrival_time());
+                queue.get(max).setTurn_around_time( t - queue.get(max).getArrival_time());
                 finishtime=t;
                 series1.getData().add(new XYChart.Data(starttime,"", new GanttChart.ExtraData( finishtime-starttime, p1[(maskp.indexOf(queue.get(max)))].getColor())));
 
@@ -250,11 +294,14 @@ public class PriorityAlgorithm {
             System.out.println(" " + maskp.get(i).getName()
                     + "    " + maskp.get(i).getWt());
             res = res + maskp.get(i).getWt();
+            resc=resc+maskp.get(i).getTurn_around_time();
 
         }
         System.out.println("Average waiting time is "
                 + (float)res / maskp.size());
         System.out.println("Sequence is like that " + seq);
+        setAverage_waiting_time((double)res/maskp.size());
+        setAverage_turnAround_time((double)resc/maskp.size());
         return series1;
     }
 

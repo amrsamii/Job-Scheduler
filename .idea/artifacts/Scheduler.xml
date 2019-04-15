@@ -10,9 +10,10 @@
         <option name="icons">
           <JavaFxApplicationIcons>
             <option name="linuxIcon" value="$PROJECT_DIR$/src/sample/sch.png" />
+            <option name="windowsIcon" value="$PROJECT_DIR$/src/sample/sch.ico" />
           </JavaFxApplicationIcons>
         </option>
-        <option name="nativeBundle" value="exe" />
+        <option name="nativeBundle" value="all" />
         <option name="title" value="Scheduler" />
         <option name="vendor" value="" />
         <option name="version" value="" />

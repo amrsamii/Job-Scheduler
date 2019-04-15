@@ -53,6 +53,8 @@ public class Controller implements Initializable {
     public Label numberError;
     public TextField numberInput;
     public MenuItem play;
+    public TextField Average_Turnaround_Time;
+    public TextField average_waiting_time;
     private boolean prioritySet = true;
     GanttChart<Number,String> chart;
 
@@ -115,7 +117,7 @@ public class Controller implements Initializable {
     {
         try {
             int number = Integer.parseInt(burst);
-            if(number<0)
+            if(number<=0)
             {
                 burstLabel.setText("*Enter +ve No.");
                 return false;
@@ -184,7 +186,7 @@ public class Controller implements Initializable {
     {
         try {
             int number = Integer.parseInt(no);
-            if(number<0)
+            if(number<=0)
             {
                 numberError.setText("*Enter +ve No.");
                 return false;
@@ -344,6 +346,9 @@ public class Controller implements Initializable {
     public void resetButtonClicked() {
         table.getItems().clear();
         chart.getData().clear();
+        average_waiting_time.setText("");
+        Average_Turnaround_Time.setText("");
+        numberError.setText("");
         legendVBox.getChildren().clear();
     }
 
@@ -382,6 +387,8 @@ public class Controller implements Initializable {
 
 
                   XYChart.Series series = PriorityAlgorithm.NonPrePriority(pro);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
                   chart.getData().addAll(series);
 
                   break;
@@ -392,6 +399,8 @@ public class Controller implements Initializable {
 
                   XYChart.Series series = PriorityAlgorithm.PrePriorityFC(pro);
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
                   break;
 
               }
@@ -399,6 +408,8 @@ public class Controller implements Initializable {
               {
                   XYChart.Series series = PriorityAlgorithm.PrePriorityRR(pro);
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
                   break;
               }
               case "FCFS": // Priority(Non-Preemptive)
@@ -406,30 +417,44 @@ public class Controller implements Initializable {
                   XYChart.Series series = FCFSAlgorithm.FCFS(pro);
 
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
+
                   break;
               }
               case "SJF(Non-Preemptive)": // Priority(Non-Preemptive)
               {
                   XYChart.Series series = SJFAlgorithm.NonPreSJF(pro);
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
+
                   break;
               }
               case "SJF(PreemptiveFC)": // Priority(Non-Preemptive)
               {
                   XYChart.Series series = SJFAlgorithm.PreSJFFC(pro);
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
+
                   break;
               }
               case "SJF(PreemptiveRR)": // Priority(Non-Preemptive)
               {
                   XYChart.Series series = SJFAlgorithm.PreSJFRR(pro);
                   chart.getData().addAll(series);
+                  average_waiting_time.setText(Double.toString(PriorityAlgorithm.getAverage_waiting_time()));
+                  Average_Turnaround_Time.setText(Double.toString(PriorityAlgorithm.getAverage_turnAround_time()));
+
                   break;
               }
               case "Round Robin": // Priority(Non-Preemptive)
               {
                   if(validateQuantum(quantumInput.getText())) {
                       XYChart.Series series = RoundRobinAlgorithm.RoundRobin(pro, Integer.parseInt(quantumInput.getText()));
+                      average_waiting_time.setText(Double.toString(RoundRobinAlgorithm.getAverage_waiting_time()));
+                      Average_Turnaround_Time.setText(Double.toString(RoundRobinAlgorithm.getAverage_turnAround_time()));
                       chart.getData().addAll(series);
                   }
                   break;
@@ -491,16 +516,19 @@ public class Controller implements Initializable {
     }
 
     public static void legend_Process_Sort(Process[] prcos) {
-        int i, j, min_idx;
-        for (i = 0; i < prcos.length - 1; i++) {
-            min_idx = i;
-            for (j = i + 1; j < prcos.length; j++) {
-                if (prcos[j].getName().compareTo(prcos[min_idx].getName()) == -1) {
-                    min_idx = j;
+        int i, j;
+
+        for (i = 0; i<prcos.length-1; i++) {
+
+
+            for (j = i+1; j < prcos.length; j++) {
+                if (prcos[j].getName().compareTo(prcos[i].getName()) < 0) {
+                    Process temp = prcos[i];
+                    prcos[i] = prcos[j];
+                    prcos[j] = temp;
                 }
-                Process temp = prcos[min_idx];
-                prcos[min_idx] = prcos[i];
-                prcos[i] = temp;
+
+
             }
         }
     }
