@@ -15,10 +15,7 @@ public class FCFSAlgorithm {
         for(int i=0; i<p.length; i++) {
             p[i].setPriority(p[i].getArrival_time());
         }
-        for(int i=0;i<p.length;i++)
-        {
-            p[i].setColor(colors[i]);
-        }
+
         Process.ProcessSort(p);
         ArrayList<Process> processes = new ArrayList<Process>();
         for (int i=0;i<p.length;i++) {

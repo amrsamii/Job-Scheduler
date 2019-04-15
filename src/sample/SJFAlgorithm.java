@@ -14,10 +14,7 @@ public class SJFAlgorithm {
         {
             p[i].setPriority(p[i].getBurst_time());
         }
-        for(int i=0;i<p.length;i++)
-        {
-            p[i].setColor(colors[i]);
-        }
+
         Process.ProcessSort(p);
       /*  ArrayList<Process> processes = new ArrayList<Process>();
         for (int i=0;i<p.length;i++) {
@@ -31,10 +28,7 @@ public class SJFAlgorithm {
         for(int i=0; i<p.length; i++) {
             p[i].setPriority(p[i].getBurst_time());
         }
-        for(int i=0;i<p.length;i++)
-        {
-            p[i].setColor(colors[i]);
-        }
+
         Process.ProcessSort(p);
       /*  ArrayList<Process> processes = new ArrayList<Process>();
         for (int i=0;i<p.length;i++) {
@@ -47,10 +41,7 @@ public class SJFAlgorithm {
         for(int i=0; i<p.length; i++) {
             p[i].setPriority(p[i].getBurst_time());
         }
-        for(int i=0;i<p.length;i++)
-        {
-            p[i].setColor(colors[i]);
-        }
+
         Process.ProcessSort(p);
       /*  ArrayList<Process> processes = new ArrayList<Process>();
         for (int i=0;i<p.length;i++) {

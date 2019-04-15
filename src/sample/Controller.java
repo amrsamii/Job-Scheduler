@@ -3,6 +3,7 @@ package sample;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
@@ -10,6 +11,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -20,7 +25,9 @@ import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
-
+    public static String[] colors = {"status-darkRed","status-green","status-blue","status-yellow","status-black",
+            "status-brown","status-foshia","status-bate5y","status-smawy","status-nescafe","status-orange",
+            "status-red","status-lamony","status-holoOrange","status-purple","status-move","status-white"};
 
     public TextField processInput;
     public TextField burstInput;
@@ -40,6 +47,13 @@ public class Controller implements Initializable {
     public Label arrivalLabel;
     public TextField quantumInput;
     public Label quantumError;
+    public HBox buttonsBox;
+    public BorderPane root;
+    public VBox legendVBox;
+    public Label numberError;
+    public TextField numberInput;
+    public MenuItem play;
+    private boolean prioritySet = true;
     GanttChart<Number,String> chart;
 
     public void addButtonClicked() {
@@ -48,8 +62,16 @@ public class Controller implements Initializable {
         String burstTime = burstInput.getText();
         String arrivalTime = arrivalInput.getText();
         String priority = priorityInput.getText();
-        if(!validateName(name) |!validateBurst(burstTime) | !validateArrival(arrivalTime) |!validatePriority(priority))
-            return;
+        if(prioritySet) {
+            if (!validateName(name) | !validateBurst(burstTime) | !validateArrival(arrivalTime) | !validatePriority(priority))
+                return;
+        }
+
+        else
+        {
+            if (!validateName(name) | !validateBurst(burstTime) | !validateArrival(arrivalTime))
+                return;
+        }
 
         for (Process p : table.getItems())
         {
@@ -63,7 +85,8 @@ public class Controller implements Initializable {
         process.setName("P"+name);
         process.setBurst_time(Integer.parseInt(burstTime));
         process.setArrival_time(Integer.parseInt(arrivalTime));
-        process.setPriority(Integer.parseInt(priority));
+        if(prioritySet)
+             process.setPriority(Integer.parseInt(priority));
         table.getItems().add(process);
         processInput.clear();
         burstInput.clear();
@@ -157,6 +180,23 @@ public class Controller implements Initializable {
             return false;
         }
     }
+    boolean validateNumber(String no)
+    {
+        try {
+            int number = Integer.parseInt(no);
+            if(number<0)
+            {
+                numberError.setText("*Enter +ve No.");
+                return false;
+            }
+            numberError.setText("");
+            return true;
+        }catch (NumberFormatException e)
+        {
+            numberError.setText("*Enter integer No.");
+            return false;
+        }
+    }
 
     public void deleteButtonClicked() {
         ObservableList<Process> productSelected, allProducts;
@@ -170,6 +210,8 @@ public class Controller implements Initializable {
     //called as soon as the layout loads
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        root.getStylesheets().add(getClass().getResource("Viper.css").toExternalForm());
+
         priorityColumn.setCellValueFactory(new PropertyValueFactory<>("priority"));
         burstColumn.setCellValueFactory(new PropertyValueFactory<>("burst_time"));
         arrivalColumn.setCellValueFactory(new PropertyValueFactory<>("arrival_time"));
@@ -182,10 +224,18 @@ public class Controller implements Initializable {
         comboBox.getItems().add("SJF(Non-Preemptive)");
         comboBox.getItems().add("SJF(PreemptiveFC)");
         comboBox.getItems().add("SJF(PreemptiveRR)");
-        comboBox.getItems().add("Round Robbin");
+        comboBox.getItems().add("Round Robin");
 
 
+        Image cameraIcon = new Image(getClass().getResourceAsStream("/sample/index.png"));
+        ImageView camera = new ImageView(cameraIcon);
+        camera.setFitWidth(20);
+        camera.setFitHeight(20);
+        play.setGraphic(camera);
+        play.setOnAction(event -> {
+            startButtonClicked();
 
+        });
 
         final NumberAxis xAxis = new NumberAxis();
         final CategoryAxis yAxis = new CategoryAxis();
@@ -210,16 +260,29 @@ public class Controller implements Initializable {
 
         comboBox.setOnAction(event -> {
             comboErrorLabel.setText("");
-            if (comboBox.getValue().equals("Round Robbin"))
+            if (comboBox.getValue().equals("Round Robin"))
             {
-                quantumInput.setVisible(true);
-                quantumError.setVisible(true);
+                showQuantumStuff(true);
 
+                if(prioritySet)
+                setTableForNoPriority();
+
+            }
+            else if (comboBox.getValue().equals("FCFS")||
+                    comboBox.getValue().equals("SJF(Non-Preemptive)")||
+            comboBox.getValue().equals("SJF(PreemptiveFC)")||
+            comboBox.getValue().equals("SJF(PreemptiveRR)"))
+            {
+                showQuantumStuff(false);
+                if(prioritySet)
+
+              setTableForNoPriority();
             }
             else
             {
-                quantumInput.setVisible(false);
-                quantumError.setVisible(false);
+                showQuantumStuff(false);
+                if(!prioritySet)
+                setTableForPriority();
             }
         });
 
@@ -260,35 +323,67 @@ public class Controller implements Initializable {
             }
             validateQuantum(quantumInput.getText());
         }));
+        numberInput.textProperty().addListener((observable -> {
+            if(validateNumber(numberInput.getText()))
+            {
+                int no = Integer.parseInt(numberInput.getText());
+
+
+                if(table.getItems().size()!=no)
+                    numberError.setText("*Number doesn't match table, No of Processes in table will be considered");
+               else
+                   numberError.setText("");
+            }
+            else if(numberInput.getText().equals(""))
+                numberError.setText("*Number wasn't entered, No of Processes in table will be considered");
+        }));
     }
+
 
 
     public void resetButtonClicked() {
         table.getItems().clear();
         chart.getData().clear();
+        legendVBox.getChildren().clear();
     }
 
     public void startButtonClicked() {
-        chart.getData().clear();
-        ObservableList<Process> processes =  table.getItems();
-        Process[] pro = new Process[processes.size()];
-        for (int i=0;i<pro.length;i++)
-        {
-            pro[i] = processes.get(i);
 
-        }
+
+
+
+
       if(  comboBox.getSelectionModel().getSelectedItem() == null)
           comboErrorLabel.setText("*Please Choose Algorithm First ");
       else if(table.getItems().size()==0)
           comboErrorLabel.setText("*Please Enter at least one Process ");
       else {
+          chart.getData().clear();
+          legendVBox.getChildren().clear();
+          ObservableList<Process> processes =  table.getItems();
+          Process[] pro = new Process[processes.size()];
+          for (int i=0;i<pro.length;i++)
+          {
+              pro[i] = processes.get(i);
+              pro[i].setColor(colors[i%colors.length]);
+
+          }
+          legend_Process_Sort(pro);
+          setLegend(pro);
+          Process.ProcessSort(pro);
+
           comboErrorLabel.setText("");
+          if(numberInput.getText().equals(""))
+              numberError.setText("*Number wasn't entered, No of Processes in table will be considered");
+
           switch ((String) comboBox.getValue()) {
               case "Priority(Non-Preemptive)": // Priority(Non-Preemptive)
               {
 
+
                   XYChart.Series series = PriorityAlgorithm.NonPrePriority(pro);
                   chart.getData().addAll(series);
+
                   break;
 
               }
@@ -309,6 +404,7 @@ public class Controller implements Initializable {
               case "FCFS": // Priority(Non-Preemptive)
               {
                   XYChart.Series series = FCFSAlgorithm.FCFS(pro);
+
                   chart.getData().addAll(series);
                   break;
               }
@@ -330,7 +426,7 @@ public class Controller implements Initializable {
                   chart.getData().addAll(series);
                   break;
               }
-              case "Round Robbin": // Priority(Non-Preemptive)
+              case "Round Robin": // Priority(Non-Preemptive)
               {
                   if(validateQuantum(quantumInput.getText())) {
                       XYChart.Series series = RoundRobinAlgorithm.RoundRobin(pro, Integer.parseInt(quantumInput.getText()));
@@ -344,5 +440,69 @@ public class Controller implements Initializable {
 
     }
 
+    private void setTableForNoPriority()
+    {
+        table.getColumns().remove(2);
+        buttonsBox.getChildren().remove(2);
+        burstColumn.setPrefWidth(165.0);
+        processColumn.setPrefWidth(150.0);
+        arrivalColumn.setPrefWidth(190.0);
+        prioritySet = false;
+    }
+    private void setTableForPriority()
+    {
+        table.getColumns().add(2,priorityColumn);
+        buttonsBox.getChildren().add(2,priorityInput);
+        burstColumn.setPrefWidth(154.0);
+        processColumn.setPrefWidth(130.0);
+        arrivalColumn.setPrefWidth(182.0);
+        prioritySet = true;
+
+    }
+    private void showQuantumStuff(boolean show)
+    {
+        quantumInput.setVisible(show);
+        quantumError.setVisible(show);
+    }
+
+    private void setLegend( Process[] processes)
+    {
+        HBox[] hBoxes = new HBox[3];
+        hBoxes[0] = new HBox(10);
+        legendVBox.getChildren().add(hBoxes[0]);
+        int i=0;
+        for(Process process:processes) {
+
+            Label label = new Label(process.getName());
+            label.setTextFill(Color.web("#FFF"));
+            label.setStyle("-fx-font-size:15pt; -fx-font-weight: bold;");
+            TextField textField = new TextField();
+            textField.setEditable(false);
+
+            textField.getStyleClass().add(process.getColor());
+            textField.setPrefWidth(20);
+            hBoxes[i].getChildren().addAll(textField, label,new Label(""));
+            if(hBoxes[i].getChildren().size()==18) {
+                i++;
+                hBoxes[i] = new HBox(10);
+                legendVBox.getChildren().add(hBoxes[i]);
+            }
+        }
+    }
+
+    public static void legend_Process_Sort(Process[] prcos) {
+        int i, j, min_idx;
+        for (i = 0; i < prcos.length - 1; i++) {
+            min_idx = i;
+            for (j = i + 1; j < prcos.length; j++) {
+                if (prcos[j].getName().compareTo(prcos[min_idx].getName()) == -1) {
+                    min_idx = j;
+                }
+                Process temp = prcos[min_idx];
+                prcos[min_idx] = prcos[i];
+                prcos[i] = temp;
+            }
+        }
+    }
 
 }

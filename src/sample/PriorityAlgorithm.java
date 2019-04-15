@@ -17,10 +17,6 @@ public class PriorityAlgorithm {
             p1[i]=new Process(copy_process[i]);
         }
         XYChart.Series series1 = new XYChart.Series();
-        for(int i=0;i<p1.length;i++)
-        {
-            p1[i].setColor(colors[i]);
-        }
 
 
         ArrayList<Process>p =new ArrayList<>();
@@ -103,10 +99,7 @@ public class PriorityAlgorithm {
             p1[i]=new Process(copy_process[i]);
         }
         XYChart.Series series1 = new XYChart.Series();
-        for(int i=0;i<p1.length;i++)
-        {
-            p1[i].setColor(colors[i]);
-        }
+
         int starttime=0;
         int finishtime=0;
         ArrayList<Process> p=new ArrayList<>();
@@ -191,10 +184,7 @@ public class PriorityAlgorithm {
             p1[i]=new Process(copy_process[i]);
         }
         XYChart.Series series1 = new XYChart.Series();
-        for(int i=0;i<p1.length;i++)
-        {
-            p1[i].setColor(colors[i]);
-        }
+
         int starttime=0;
         int finishtime=0;
         ArrayList <Process> p=new ArrayList<Process>();

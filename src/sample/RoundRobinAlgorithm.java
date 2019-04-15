@@ -17,10 +17,7 @@ public class RoundRobinAlgorithm {
         }
         XYChart.Series series1 = new XYChart.Series();
 
-        for(int i=0;i<p.length;i++)
-        {
-            p[i].setColor(colors[i]);
-        }
+
         int starttime=0;
         int finishtime=0;
         LinkedList<Process> queue=new LinkedList<Process>();

@@ -7,7 +7,7 @@ public class Process {
     private int wt;
     private int turn_around_time;
     private int priority;
-
+    private String color;
     public String getColor() {
         return color;
     }
@@ -16,7 +16,7 @@ public class Process {
         this.color = color;
     }
 
-    private String color;
+
 
     public Process() {
         arrival_time = 0;
