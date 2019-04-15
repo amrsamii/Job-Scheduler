@@ -1,0 +1,25 @@
+.root{
+-fx-background-color: #383838;
+-fx-font-size:11pt;
+}
+/* applied to every label in app */
+.label{
+-fx-text-fill : aliceblue;
+
+}
+
+.button{
+-fx-background-color: linear-gradient(#dc9656,#ab6442);
+-fx-text-fill : #FFF;
+-fx-background-radius: 10;
+}
+
+.button-blue{
+-fx-background-color: #7cafc2;
+-fx-text-fill : #FFF;
+-fx-background-radius: 10;
+}
+
+#bold-label{
+-fx-font-weight: bold;
+}
